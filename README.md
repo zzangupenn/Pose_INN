@@ -1,5 +1,5 @@
-### Pose_INN: Visual Pose Regression and Localization with Invertible Neural Networks
-#### Supplementary Material Readme
+# Pose_INN: Visual Pose Regression and Localization with Invertible Neural Networks
+## Supplementary Material Readme
 
 Thank you for reviewing my paper. 
 
