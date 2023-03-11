@@ -12,10 +12,12 @@ There are three stages in reproducing our work:
 
 ## Data processing
 
-1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory [data_dir]/[scene]. e.g. If your downloaded ShopFacade, your [data_dir]/[scene] is [data_dir]/ShopFacade.
+1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory [data_dir]/[scene]. e.g. If your downloaded ShopFacade, your [data_dir]/[scene] is [data_dir]/ShopFacade. If your are testing on 7scene, extract all the seq zip files in [data_dir]/[scene].
 
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
 ```
 pip3 install kapture
 ```
+Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into [data_dir]/[scene] and run it.
 
+3.
