@@ -18,7 +18,7 @@ There are four stages in reproducing our work:
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
 
     `pip3 install kapture`
-    
+
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into `[data_dir]/[scene]` and run it.
 
 3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. 
@@ -68,7 +68,6 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     --bounding-box-min -5 -5 -5 \
     --bounding-box-max 5 5 5 \
     --num-points 10000
-
     ```
     This should generate a `point_cloud.ply` file in your `[data_dir]/[scene]` directory.
 
