@@ -90,7 +90,10 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     cd Pose_INN
     mkdir results
-    docker run -ti --gpus all --ipc=host -v [data_dir]/[scene]:/workspace/data -v ./results:/workspace/result pose_inn /bin/bash
+    docker build -t pose_inn .
+    docker run -ti --gpus all --ipc=host \
+    -v [data_dir]/[scene]:/workspace/data \
+    -v ./results:/workspace/result pose_inn /bin/bash
     ```
 
 
