@@ -17,9 +17,9 @@ There are four stages in reproducing our work:
     ```
     cd Pose_INN
     docker build -t pose_inn .
-    docker run -ti --gpus all --ipc=host --name pose_inn \
+    docker run -ti -rm --gpus all --ipc=host --name pose_inn \
     -v [data_dir]:/workspace/data \
-    -v ./results:/workspace/result pose_inn /bin/bash
+    -v ./results:/workspace/results pose_inn /bin/bash
     ```
     If you want to visualize the camera sampling result, you will need to run natively.
 
@@ -32,12 +32,12 @@ There are four stages in reproducing our work:
 
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. Run the `kapture_cambridge.sh` or `kapture_7scene.sh` with `[scene]` as argument:
     ```
-    sh ./kapture_cambridge.sh [scene]
+    cd /workspace
+    sh ./kapture_cambridge.sh [data_dir]/[scene]
     ```
 
 3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. 
     ```
-    cd /workspace
     python3 data_processing_for_nerf.py [scene]
     ```
 

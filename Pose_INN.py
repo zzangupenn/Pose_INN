@@ -168,23 +168,23 @@ def main():
     from tqdm import trange
     from torch.utils.tensorboard import SummaryWriter
     from utils import ConfigJSON, DataProcessor
-    writer = SummaryWriter('result/tensorboard/' + EXP_NAME)
+    writer = SummaryWriter('results/tensorboard/' + EXP_NAME)
     device = torch.device('cuda:1')
     
     print("EXP_NAME", EXP_NAME)
-    if not os.path.exists('result/' + EXP_NAME + '/'):
-            os.mkdir('result/' + EXP_NAME + '/')
+    if not os.path.exists('results/' + EXP_NAME + '/'):
+            os.mkdir('results/' + EXP_NAME + '/')
     with open(__file__, "r") as src:
-        with open('result/' + EXP_NAME + '/' + EXP_NAME + '.py', "w") as tgt:
+        with open('results/' + EXP_NAME + '/' + EXP_NAME + '.py', "w") as tgt:
             tgt.write(src.read())
-    with open('result/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
+    with open('results/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
         tgt.writelines(EXP_NAME + '\n')
             
     if os.path.exists('train_data.npz') and not RE_PROCESS_DATA:
         train_data = np.load('train_data.npz')
         c = ConfigJSON()
         c.load_file('train_data.json')
-        c.save_file('result/' + EXP_NAME + '/' + EXP_NAME + '.json')
+        c.save_file('results/' + EXP_NAME + '/' + EXP_NAME + '.json')
     else:
         data_dir = DATA_DIR + SCENE
         dataset = np.load(data_dir + '50k_train_w_render.npz')
@@ -208,7 +208,7 @@ def main():
         pose_array[:, 3] = dp.runtime_normalize(dp.two_pi_warp(pose_array[:, 3]), c.d['normalization_rz'])
         pose_array[:, 4] = dp.runtime_normalize(dp.two_pi_warp(pose_array[:, 4]), c.d['normalization_rx'])
         pose_array[:, 5] = dp.runtime_normalize(dp.two_pi_warp(pose_array[:, 5]), c.d['normalization_ry'])
-        c.save_file('result/' + EXP_NAME + '/' + EXP_NAME + '.json')
+        c.save_file('results/' + EXP_NAME + '/' + EXP_NAME + '.json')
         c.save_file('train_data.json')
         
         encoded_pos = []
@@ -289,13 +289,13 @@ def main():
     model = Local_INN(device)
     model.to(device)
     if CONTINUE_TRAINING:
-        ret = trainer.continue_train_load(model, path='result/' + EXP_NAME + '/', transfer=TRANSFER_TRAINING)
+        ret = trainer.continue_train_load(model, path='results/' + EXP_NAME + '/', transfer=TRANSFER_TRAINING)
         if ret is not None:
             print('Continue Training')
             model = ret
             
     if TRANSFER_TRAINING:
-        ret = trainer.continue_train_load(model, path='result/' + TRANSFER_EXP_NAME + '/', transfer=TRANSFER_TRAINING, transfer_exp_name=TRANSFER_EXP_NAME)
+        ret = trainer.continue_train_load(model, path='results/' + TRANSFER_EXP_NAME + '/', transfer=TRANSFER_TRAINING, transfer_exp_name=TRANSFER_EXP_NAME)
         if ret is not None:
             print('Transfer Training')
             model = ret
@@ -513,7 +513,7 @@ def main():
             ' | ' + return_text
         # '|vae_kl {:.5f}'.format(epoch_info_extra[1]) + \
         print(text_print)
-        with open('result/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
+        with open('results/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
             tgt.writelines(text_print + '\n')
             
         text_print = "Epoch {:d}".format(epoch) + \
@@ -527,7 +527,7 @@ def main():
             ' | ' + 'TEST'
         # '|vae_kl {:.5f}'.format(epoch_info_extra[5]) + \
         print(text_print)
-        with open('result/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
+        with open('results/' + EXP_NAME + '/' + EXP_NAME + '.txt', "a") as tgt:
             tgt.writelines(text_print + '\n')
     writer.flush()
 
