@@ -13,6 +13,7 @@ RUN apt install zip -y
 RUN pip install pyyaml
 RUN pip install open3d
 RUN pip install tqdm
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 RUN pip install opencv-python
 RUN pip install matplotlib
 RUN pip install kapture

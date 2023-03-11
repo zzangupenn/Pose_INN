@@ -27,6 +27,7 @@ There are four stages in reproducing our work:
     ```
     cd data
     wget <dataset_url>
+    unzip [scene].zip
     ```
 
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. Run the `kapture_cambridge.sh` or `kapture_7scene.sh` with `[scene]` as argument:
@@ -35,8 +36,14 @@ There are four stages in reproducing our work:
     ```
 
 3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. 
+    ```
+    cd /workspace
+    python3 data_processing_for_nerf.py [scene]
+    ```
 
 It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`.
+
+
 
 ## NeRF training
 
