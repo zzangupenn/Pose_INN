@@ -29,9 +29,10 @@ There are four stages in reproducing our work:
     wget <dataset_url>
     ```
 
-2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format.
-
-    Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into `[data_dir]/[scene]` and run it.
+2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. Run the `kapture_cambridge.sh` or `kapture_7scene.sh` with `[scene]` as argument:
+    ```
+    sh ./kapture_cambridge.sh [scene]
+    ```
 
 3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. 
 
