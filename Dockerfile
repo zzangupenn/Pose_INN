@@ -3,7 +3,7 @@ RUN apt update
 RUN apt-get update
 RUN apt install nano -y
 RUN apt install git -y
-RUN apt install curl -y
+RUN apt install wget -y
 RUN pip install tensorboard
 RUN pip install scipy
 RUN pip install efficientnet-pytorch
