@@ -17,7 +17,7 @@ There are four stages in reproducing our work:
     ```
     cd Pose_INN
     docker build -t pose_inn .
-    docker run -ti -rm --gpus all --ipc=host --name pose_inn \
+    docker run -ti --rm --gpus all --ipc=host --name pose_inn \
     -v [data_dir]:/workspace/data \
     -v ./results:/workspace/results pose_inn /bin/bash
     ```
