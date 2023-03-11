@@ -12,7 +12,7 @@ There are three stages in reproducing our work:
 
 ## Data processing
 
-1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory [data_dir]/[scene]. e.g. If your downloaded ShopFacade, your [data_dir]/[scene] is [data_dir]/ShopFacade. If your are testing on 7scene, extract all the seq zip files in [data_dir]/[scene].
+1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`. If your are testing on 7scene, extract all the seq zip files in `[data_dir]/[scene]`.
 
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
     ```
@@ -20,6 +20,6 @@ There are three stages in reproducing our work:
     ```
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into [data_dir]/[scene] and run it.
 
-3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. It create a directory `[data_dir]/[scene]/images`, a json file 
+3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. It create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`.
 
 4. 
