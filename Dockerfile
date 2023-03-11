@@ -27,4 +27,4 @@ ENV PATH="${PATH}:/home/user/.local/bin"
 SHELL ["/bin/bash", "-c"]
 
 # RUN chown -R user:user /workspace/
-USER 1005:1005
+# USER 1005:1005
