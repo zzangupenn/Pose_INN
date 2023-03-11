@@ -27,14 +27,10 @@ There are four stages in reproducing our work:
 
 1. We uses [Nerfstudio](https://github.com/nerfstudio-project/nerfstudio/tree/v0.1.16) for training the NeRF. Notice the commands provided here may only work with v0.1.16. We attached the version we use. We used their Dockerfile to create a docker container. You can also refer to their wonderful [documentation](https://github.com/nerfstudio-project/nerfstudio/blob/v0.1.16/docs/quickstart/installation.md).
 
-2. Your can use [their docker image](https://hub.docker.com/layers/dromni/nerfstudio/0.1.16/images/sha256-de540fc3e53b62428a4787de78e09feffc84cfbadcca6b4afe4df40a78d3fd92?context=explore) or build the docker image:
+2. Your can use [their docker image](https://hub.docker.com/layers/dromni/nerfstudio/0.1.16/images/sha256-de540fc3e53b62428a4787de78e09feffc84cfbadcca6b4afe4df40a78d3fd92?context=explore) or build and run the docker image:
     ```
     cd nerfstudio
     docker build --tag nerfstudio -f Dockerfile .
-    ```
-
-3. Run the docker container:
-    ```
     docker run --gpus all --tag nerfstudio --network host \
         -v [data_dir]/:/workspace/ 
         -v /home/<YOUR_USER>/.cache/:/home/user/.cache/ 
