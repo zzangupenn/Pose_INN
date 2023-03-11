@@ -13,7 +13,7 @@ There are four stages in reproducing our work:
 
 ## Data processing
 
-1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`. If your are testing on 7scene, extract all the seq zip files in `[data_dir]/[scene]`.
+1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`. If your are testing on 7scene, extract all the seq zip files in `[data_dir]/[scene]` as well.
 
 2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
 
@@ -79,14 +79,14 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     --output-path ./render_pc/ \
     --output-format images
     ```
-    This is put the rendered image in `[data_dir]/[scene]/render_pc/`.
+    This puts the rendered image in `[data_dir]/[scene]/render_pc/`.
 
 2. Modify the first two lines in `data_gathering.py` and run it.
     This will generate a `50k_train_w_render.npz` file in your `[data_dir]/[scene]`.
 
 ## Pose_INN training.
 
-1. Please the Dockerfile run the container:
+1. Please use the Dockerfile build and run the container:
     ```
     cd Pose_INN
     mkdir results

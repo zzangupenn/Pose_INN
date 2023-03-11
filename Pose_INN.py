@@ -12,11 +12,16 @@ from FrEIA.modules import GLOWCouplingBlock, PermuteRandom
 from efficientnet_pytorch import EfficientNet
 import torchvision
 import time
-from torch_utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, PositionalEncoding_torch
+from torch.utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, PositionalEncoding_torch
 from rotation_utils import euler_2_matrix_sincos, GeodesicLoss, get_orient_err, get_posit_err
 from pytorch3d import transforms
 
-EXP_NAME = 'pose_inn'
+EXP_NAME = 'pose_inn_kings' # 4 layers INN, 6 layers decoder
+SCENE = 'KingsCollege/'
+DATA_DIR = 'data/'
+DATAFILE = '50k_train_w_render.npz'
+
+MOVE_DATA_TO_DEVICE = 1
 INSTABILITY_RECOVER = 1
 USE_MIX_PRECISION_TRAINING = 0
 CONTINUE_TRAINING = 0
@@ -66,7 +71,6 @@ class Decoder(nn.Module):
         self.trans_conv4 = Conv2DLayer(40, 40, kernel_size=3, stride=1, padding=1, add_layer=1, add_layer_kernel_size=3)
         self.trans_conv5 = TransConv2DLayer(40, 20, kernel_size=4, stride=2, padding=1, add_layer=1, add_layer_kernel_size=3)
         self.trans_conv6 = TransConv2DLayer(20, 3, kernel_size=4, stride=2, padding=1, add_layer=1, add_layer_kernel_size=3)
-        # self.conv = nn.Conv2d(20, 3, kernel_size=3, stride=1, padding=1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, z):
@@ -80,7 +84,6 @@ class Decoder(nn.Module):
         x = self.trans_conv4(x)
         x = self.trans_conv5(x)
         x = self.trans_conv6(x)
-        # x = self.conv(x)
         x = self.sigmoid(x)
         return x
 
@@ -166,7 +169,7 @@ def main():
     from torch.utils.tensorboard import SummaryWriter
     from utils import ConfigJSON, DataProcessor
     writer = SummaryWriter('result/tensorboard/' + EXP_NAME)
-    device = torch.device('cuda')
+    device = torch.device('cuda:2')
     
     print("EXP_NAME", EXP_NAME)
     if not os.path.exists('result/' + EXP_NAME + '/'):
@@ -183,9 +186,11 @@ def main():
         c.load_file('train_data.json')
         c.save_file('result/' + EXP_NAME + '/' + EXP_NAME + '.json')
     else:
-        data_dir = 'data/'
+        data_dir = DATA_DIR + SCENE
         dataset = np.load(data_dir + '50k_train_w_render.npz')
         train_imgs = dataset['train_imgs']
+        # train_imgs_render = dataset['train_imgs_render']
+        # test_imgs_render = dataset['test_imgs_render']
         train_poses = dataset['train_poses']
         test_imgs = dataset['test_imgs']
         test_poses = dataset['test_poses']
@@ -207,6 +212,7 @@ def main():
         c.save_file('train_data.json')
         
         encoded_pos = []
+        matrix_array = []
         positional_encoding = PositionalEncoding(L = int(N_DIM / 12))
         p_encoding_t = PositionalEncoding_torch(L = int(N_DIM / 12), device=device)
         for ind_0 in trange(pose_array.shape[0]):
@@ -254,11 +260,14 @@ def main():
         
     
     train_set = torchDataset(train_data, device)
-    # train_loader = torch.utils.data.DataLoader(dataset=train_set, batch_size=BATCHSIZE, shuffle=True, pin_memory=True, num_workers=5, drop_last=True)
-    train_loader = torch.utils.data.DataLoader(dataset=train_set, batch_size=BATCHSIZE, shuffle=True, drop_last=True)
     test_set = torchDataset(test_data, device)
-    # test_loader = torch.utils.data.DataLoader(dataset=test_set, batch_size=BATCHSIZE, shuffle=True, pin_memory=True, num_workers=5)
-    test_loader = torch.utils.data.DataLoader(dataset=test_set, batch_size=BATCHSIZE, shuffle=True, drop_last=False)
+    if MOVE_DATA_TO_DEVICE:
+        train_loader = torch.utils.data.DataLoader(dataset=train_set, batch_size=BATCHSIZE, shuffle=True, drop_last=True)
+        test_loader = torch.utils.data.DataLoader(dataset=test_set, batch_size=BATCHSIZE, shuffle=True, drop_last=False)
+    else: 
+        train_loader = torch.utils.data.DataLoader(dataset=train_set, batch_size=BATCHSIZE, shuffle=True, pin_memory=True, num_workers=5, drop_last=True)
+        test_loader = torch.utils.data.DataLoader(dataset=test_set, batch_size=BATCHSIZE, shuffle=True, pin_memory=True, num_workers=5)
+    
     
     
     # cond_noise = np.array(COND_NOISE) # m, rad
@@ -322,10 +331,11 @@ def main():
             optimizer.param_groups[2]['lr'] = current_lr
             # optimizer.param_groups[3]['lr'] = current_lr
         for img, pose, img2, rot_matrix in train_loader:
-            # img = img.to(device)
-            # img2 = img2.to(device)
-            # pose = pose.to(device)
-            # rot_matrix = rot_matrix.to(device)
+            if not MOVE_DATA_TO_DEVICE:
+                img = img.to(device)
+                img2 = img2.to(device)
+                pose = pose.to(device)
+                rot_matrix = rot_matrix.to(device)
             optimizer.zero_grad()
             with autocast(enabled=mix_precision):
                 
@@ -341,8 +351,7 @@ def main():
                 vae_recon_loss = l1_loss(img, y_vae)
                 inn_recon_loss = l1_loss(img, y_inn)
                 y_hat_inn_loss = l1_loss(y_hat_inn[:, :-6], y_hat_vae[:, :-6])
-                # loss_forward = vae_recon_loss + inn_recon_loss + vae_kl_loss + y_hat_inn_loss
-                loss_forward = vae_recon_loss + vae_kl_loss + y_hat_inn_loss
+                loss_forward = vae_recon_loss + inn_recon_loss + vae_kl_loss + y_hat_inn_loss
                 epoch_info[0] += loss_forward.item()
             
             scaler.scale(loss_forward).backward(retain_graph=True)
@@ -356,12 +365,8 @@ def main():
                 result_angles[:, 1] = p_encoding_t.batch_decode_even(x_hat_0[:, 8], x_hat_0[:, 9])
                 result_angles[:, 2] = p_encoding_t.batch_decode_even(x_hat_0[:, 10], x_hat_0[:, 11])
                 
-                # print('x_hat_0[:, 6:12]', x_hat_0[:, 6:12])
-                # print(transforms.euler_angles_to_matrix(result_angles * 2 * np.pi, 'ZXY')[0])
-                # print(euler_2_matrix_sincos(x_hat_0[:, 6:12], 'ZXY')[0])
                 rot_loss = geodesic_loss(transforms.euler_angles_to_matrix(result_angles * 2 * np.pi, 'ZXY'), rot_matrix)
                 epoch_info_extra[8] += rot_loss.item()
-                # loss_reverse = l1_loss(x_hat_0[:, :6], x_hat_gt[:, :6]) * 1.5 + l1_loss(x_hat_0[:, 6:12], x_hat_gt[:, 6:12])
                 
                 loss_reverse = l1_loss(x_hat_0[:, :6], x_hat_gt[:, :6])
                 epoch_info[2] += loss_reverse.item()
@@ -372,10 +377,8 @@ def main():
                 y_hat = y_hat_vae[None, :, :-6].repeat(n_hypo, 1, 1)
                 y_hat_z_samples = torch.cat((y_hat, z_samples), dim=2).view(-1, N_DIM)
                 x_hat_i = model.reverse(y_hat_z_samples)[0].view(n_hypo, batch_size, N_DIM)
-
                 
                 x_hat_i_loss = torch.mean(torch.min(torch.mean(torch.abs(x_hat_i[:, :, :6] - x_hat_gt[:, :6]), dim=2), dim=0)[0])
-                
                 result_angles = torch.zeros((n_hypo, BATCHSIZE, 3)).to(device)
                 result_angles[:, :, 0] = p_encoding_t.batch_decode_even(x_hat_i[:, :, 6], x_hat_i[:, :, 7])
                 result_angles[:, :, 1] = p_encoding_t.batch_decode_even(x_hat_i[:, :, 8], x_hat_i[:, :, 9])
@@ -418,10 +421,11 @@ def main():
         epoch_info_5 = []
         epoch_info_6 = []
         for img, pose, img2, _ in test_loader:
-            # img = img.to(device)
-            # img2 = img2.to(device)
-            # pose = pose.to(device)
-            # rot_matrix = rot_matrix.to(device)
+            if not MOVE_DATA_TO_DEVICE:
+                img = img.to(device)
+                img2 = img2.to(device)
+                pose = pose.to(device)
+                rot_matrix = rot_matrix.to(device)
             with torch.no_grad():
                 x_hat_gt = pose[:, :N_DIM]
                 # cond = torch.zeros((pose.shape[0], COND_DIM), device=device)
@@ -432,7 +436,7 @@ def main():
                 y_hat_inn, _ = model(x_hat_gt)
                 y_inn = model.vae.decoder.forward(y_hat_inn[:, :-6])
                 y_vae = model.vae.decoder.forward(y_hat_vae[:, :-6])
-                vae_kl_loss = model.vae.encoder.kl * 0.0001
+                vae_kl_loss = model.vae.encoder.kl * 0.00001
                 vae_recon_loss = l1_loss(img, y_vae)
                 inn_recon_loss = l1_loss(img, y_inn)
                 y_hat_inn_loss = l1_loss(y_hat_inn[:, :-6], y_hat_vae[:, :-6])
@@ -441,8 +445,6 @@ def main():
                 
                 y_hat_vae[:, -6:] = 0
                 x_hat_0, _ = model.reverse(y_hat_vae)
-                # loss_reverse = l1_loss(x_hat_0[:, :6], x_hat_gt[:, :6])
-                # epoch_info[6] += loss_reverse.item()
                 
                 result_posit = torch.zeros((x_hat_gt.shape[0], 3)).to(device)
                 result_posit[:, 0] = dp.de_normalize(p_encoding_t.batch_decode(x_hat_0[:, 0], x_hat_0[:, 1]), c.d['normalization_tx'])

@@ -1,4 +1,4 @@
-# kapture use
+cd $1
 
 sed 's/.jpg/.png/g' ./reconstruction.nvm > ./reconstruction_png.nvm
 tail -n +4 ./dataset_train.txt > ./dataset_train_cut.txt

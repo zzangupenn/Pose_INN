@@ -158,7 +158,7 @@ print('Show the statistics of train poses. Omitted')
 
 
 
-print('First sample 1000 poses for visualization')
+print('First sample 1000 poses for visualization. Omitted.')
 sampled_num = 1000
 sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
                         delta_training, N_in_view, delta_in_view, pcd)
