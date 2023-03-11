@@ -20,4 +20,6 @@ There are three stages in reproducing our work:
     ```
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into [data_dir]/[scene] and run it.
 
-3.
+3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. It create a directory `[data_dir]/[scene]/images`, a json file 
+
+4. 
