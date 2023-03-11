@@ -14,4 +14,8 @@ There are three stages in reproducing our work:
 
 1. download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory [data_dir].
 
-2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A attached a version we used.
+2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
+```
+pip3 install kapture
+```
+
