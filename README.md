@@ -43,7 +43,7 @@ There are four stages in reproducing our work:
     python3 data_processing_for_nerf.py [scene]
     ```
 
-It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`.
+It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`. Exit the docker container after finish.
 
 
 
@@ -65,7 +65,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     cd nerfstudio
     docker build --tag nerfstudio -f Dockerfile .
-    docker run --gpus all --network host \
+    docker run --gpus all --network host --name pose_inn_nerfstudio \
         -v [data_dir]/[scene]/:/workspace/ \
         -v ~/.cache/:/home/user/.cache/ \
         -p 7007:7007 --shm-size=12gb --rm -it nerfstudio
