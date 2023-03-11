@@ -53,13 +53,11 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     ns-train nerfacto --data . --max-num-iterations 10000 nerfstudio-data --train-split-percentage 1  
     ```
-    You should be able to see the training progress with their. 
+    You should be able to see the training progress with their viewer. 
     
-    One thing we noticed is that the training is not stable sometimes. If it crashes or the viewer only renders black, you need to retrain the model.  
+    One thing we noticed is that the training sometimes is not stable. If it crashes or the viewer only renders black, you need to retrain the model.  
 
-5. After the training, you should see a `outputs/nerfacto/` folder in your `[data_dir]/[scene]` directory with your trained sessions. 
-
-    We will refer that as the `[session]` folder. e.g. A `[session]` folder may look like `2023-03-11_062711`.
+5. After the training, you should see a `outputs/nerfacto/` folder in your `[data_dir]/[scene]` directory with your trained sessions. We will refer that as the `[session]` folder. e.g. A `[session]` folder may look like `2023-03-11_062711`.
 
     In the nerfstudio container, run the following to export the point cloud:
     ```
