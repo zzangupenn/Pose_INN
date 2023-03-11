@@ -29,7 +29,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 1. We uses [Nerfstudio](https://github.com/nerfstudio-project/nerfstudio/tree/v0.1.16) for training the NeRF. Notice the commands provided here may only work with v0.1.16. We attached the version we use. We used their Dockerfile to create a docker container. You can also refer to their wonderful [documentation](https://github.com/nerfstudio-project/nerfstudio/blob/v0.1.16/docs/quickstart/installation.md).
 
-2. Your can use [their docker image](https://hub.docker.com/layers/dromni/nerfstudio/0.1.16/images/sha256-de540fc3e53b62428a4787de78e09feffc84cfbadcca6b4afe4df40a78d3fd92?context=explore):
+2. You need to have cuda version newer than 11.7. Your can use [their docker image](https://hub.docker.com/layers/dromni/nerfstudio/0.1.16/images/sha256-de540fc3e53b62428a4787de78e09feffc84cfbadcca6b4afe4df40a78d3fd92?context=explore):
     
     ```
     docker pull dromni/nerfstudio:0.1.16
@@ -71,7 +71,27 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 ## NeRF rendering
 
-1. 
+1. In the nerfstudio container, run the following to render the images:
+    ```
+    ns-render --load-config outputs/nerfacto/[session]/config.yml \
+    --traj filename \
+    --camera-path-filename ./camera_path.json \
+    --output-path ./render_pc/ \
+    --output-format images
+    ```
+    This is put the rendered image in `[data_dir]/[scene]/render_pc/`.
+
+2. Modify the first two lines in `data_gathering.py` and run it.
+    This will generate a `50k_train_w_render.npz` file in your `[data_dir]/[scene]`.
+
+## Pose_INN training.
+
+1. Please the Dockerfile run the container:
+    ```
+    cd Pose_INN
+    mkdir results
+    docker run -ti --gpus all --ipc=host -v [data_dir]/[scene]:/workspace/data -v ./results:/workspace/result pose_inn /bin/bash
+    ```
 
 
 
