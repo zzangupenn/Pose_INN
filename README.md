@@ -21,7 +21,9 @@ There are four stages in reproducing our work:
     -v [data_dir]:/workspace/data \
     -v ./results:/workspace/results pose_inn /bin/bash
     ```
-    If you want to visualize the camera sampling result, you will need to run natively.
+    If you are using a server with multiple users, you need to replace the `1000` in the Dockerfile with your `$UID`. Same goes for the Nerfstudio Dockerfile.
+
+    If you want to visualize the camera sampling result, you may want to run natively.
 
 1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`:
     ```
@@ -36,7 +38,7 @@ There are four stages in reproducing our work:
     sh ./kapture_cambridge.sh [data_dir]/[scene]
     ```
 
-3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. 
+3. We will prepare the data for NeRF: 
     ```
     python3 data_processing_for_nerf.py [scene]
     ```
