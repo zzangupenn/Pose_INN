@@ -3,7 +3,7 @@
 
 Thank you for reviewing my paper. 
 
-In this supplementary material we provide a guidance on reproducing our work. Our data sampling and training process is fast. The data preparation part takes about 1 hour. For the Pose_INN training, you can get a good result for 5-6 hours. Due to the file size limit, we can't share the custom data with you. This guide will about how to train on the Cambridge and 7scene dataset.
+In this supplementary material we provide a guidance on reproducing our work. The data preparation part takes about 1 hour. For the Pose_INN training, you can get a good result with 5-6 hours. Due to the file size limit, we can't share the custom data recorded with the real-world robot. This guide will be about how to train on the Cambridge and 7scene dataset.
 
 There are four stages in reproducing our work: 
 1. Data processing
