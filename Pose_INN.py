@@ -169,7 +169,7 @@ def main():
     from torch.utils.tensorboard import SummaryWriter
     from utils import ConfigJSON, DataProcessor
     writer = SummaryWriter('result/tensorboard/' + EXP_NAME)
-    device = torch.device('cuda:2')
+    device = torch.device('cuda:1')
     
     print("EXP_NAME", EXP_NAME)
     if not os.path.exists('result/' + EXP_NAME + '/'):

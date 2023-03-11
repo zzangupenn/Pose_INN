@@ -13,11 +13,23 @@ There are four stages in reproducing our work:
 
 ## Data processing
 
-1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`. If your are testing on 7scene, extract all the seq zip files in `[data_dir]/[scene]` as well.
+1. You can use our Dockerfile build and run the container:
+    ```
+    cd Pose_INN
+    docker build -t pose_inn .
+    docker run -ti --gpus all --ipc=host --name pose_inn \
+    -v [data_dir]:/workspace/data \
+    -v ./results:/workspace/result pose_inn /bin/bash
+    ```
+    If you want to visualize the camera sampling result, you will need to run natively.
 
-2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format. A version we used is attached, but it can be install with:
+1. Download the [Cambridge](https://www.repository.cam.ac.uk/handle/1810/251342) or the [7scene](https://www.microsoft.com/en-us/research/project/rgb-d-dataset-7-scenes/) dataset. Extract in directory `[data_dir]/[scene]`. e.g. If your downloaded ShopFacade, your `[data_dir]/[scene]` is `[data_dir]/ShopFacade`:
+    ```
+    cd data
+    wget <dataset_url>
+    ```
 
-    `pip3 install kapture`
+2. We use [kapture](https://github.com/naver/kapture) to convert the dataset format to COLMAP format.
 
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into `[data_dir]/[scene]` and run it.
 
@@ -89,10 +101,9 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 1. Please use the Dockerfile build and run the container:
     ```
     cd Pose_INN
-    mkdir results
     docker build -t pose_inn .
-    docker run -ti --gpus all --ipc=host \
-    -v [data_dir]/[scene]:/workspace/data \
+    docker run -ti --gpus all --ipc=host --name pose_inn \
+    -v [data_dir]:/workspace/data \
     -v ./results:/workspace/result pose_inn /bin/bash
     ```
 
