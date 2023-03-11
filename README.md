@@ -18,7 +18,6 @@ There are three stages in reproducing our work:
     ```
     pip3 install kapture
     ```
-
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into [data_dir]/[scene] and run it.
 
 3.
