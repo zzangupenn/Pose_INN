@@ -5,10 +5,11 @@ Thank you for reviewing my paper.
 
 In this supplementary material we provide a guidance on reproducing our work. Our data sampling and training process is fast. The data preparation part takes about 1 hour. For the Pose_INN training, you can get a good result for 5-6 hours. Due to the file size limit, we can't share the custom data with you. This guide will about how to train on the Cambridge and 7scene dataset.
 
-There are three stages in reproducing our work: 
+There are four stages in reproducing our work: 
 1. Data processing
-2. NeRF training and rendering
-3. Pose_INN training
+2. NeRF training
+3. NeRF rendering
+4. Pose_INN training
 
 ## Data processing
 
@@ -20,6 +21,29 @@ There are three stages in reproducing our work:
     ```
     Copy the `kapture_cambridge.sh` or `kapture_7scene.sh` into [data_dir]/[scene] and run it.
 
-3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. It create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`.
+3. Modify the first two lines in `data_processing_cambridge_for_nerf.py` or `data_processing_7scene_for_nerf.py` and run it. It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/[scene]/transforms.json`, and a npz file `[data_dir]/[scene]/[scene]_H_matrixes.npz`.
 
-4. 
+## NeRF training
+
+1. We uses [Nerfstudio](https://github.com/nerfstudio-project/nerfstudio/tree/v0.1.16) for training the NeRF. Notice the commands provided here may only work with v0.1.16. We attached the version we use. We used their Dockerfile to create a docker container. You can also refer to their wonderful [documentation](https://github.com/nerfstudio-project/nerfstudio/blob/v0.1.16/docs/quickstart/installation.md).
+
+2. First build the docker image:
+    ```
+    cd nerfstudio
+    docker build --tag nerfstudio -f Dockerfile .
+    ```
+
+3. Run the docker container:
+    ```
+    docker run --gpus all --tag nerfstudio --network host \
+        -v [data_dir]/:/workspace/ 
+        -v /home/<YOUR_USER>/.cache/:/home/user/.cache/ 
+        -p 7007:7007 --shm-size=12gb --rm -it nerfstudio
+    ```
+
+4. Inside the container, start the NeRF training:
+    ```
+    ns-train nerfacto --data data/OldHospital --max-num-iterations 60000 nerfstudio-data --train-split-percentage 1  
+    ```
+
+
