@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+BN_MOMENTUM = 0.1
+
 class LinearLayer(nn.Sequential):
     def __init__(self, in_channels, out_channels, is_relu=True):
         super().__init__()
@@ -52,6 +54,43 @@ class TransConv2DLayer(nn.Sequential):
             self.add_module('relu', nn.ReLU())
     def forward(self, x):
         return super().forward(x)
+
+class PositionalEncoding():
+    def __init__(self, L):
+        self.L = L
+        self.val_list = []
+        for l in range(L):
+            self.val_list.append(2.0 ** l)
+        self.val_list = np.array(self.val_list)
+
+    def encode(self, x):
+        return np.sin(self.val_list * np.pi * x), np.cos(self.val_list * np.pi * x)
+    
+    def encode_even(self, x):
+        return np.sin(self.val_list * np.pi * 2 * x), np.cos(self.val_list * np.pi * 2 * x)
+    
+    def decode(self, sin_value, cos_value):
+        atan2_value = np.arctan2(sin_value, cos_value) / (np.pi)
+        if np.isscalar(atan2_value) == 1:
+            if atan2_value > 0:
+                return atan2_value
+            else:
+                return 1 + atan2_value
+        else:
+            atan2_value[np.where(atan2_value < 0)] = atan2_value[np.where(atan2_value < 0)] + 1
+            return atan2_value
+        
+    def decode_even(self, sin_value, cos_value):
+        atan2_value = np.arctan2(sin_value, cos_value) / np.pi/2
+        if np.isscalar(atan2_value) == 1:
+            if atan2_value < 0:
+                atan2_value = 1 + atan2_value
+            if np.abs(atan2_value - 1) < 0.001:
+                atan2_value = 0
+        else:
+            atan2_value[np.where(atan2_value < 0)] = atan2_value[np.where(atan2_value < 0)] + 1
+            atan2_value[np.where(np.abs(atan2_value - 1) < 0.001)] = 0
+        return atan2_value
     
 class PositionalEncoding_torch():
     def __init__(self, L, device):
