@@ -12,11 +12,11 @@ from FrEIA.modules import GLOWCouplingBlock, PermuteRandom
 from efficientnet_pytorch import EfficientNet
 import torchvision
 import time
-from torch.utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, PositionalEncoding_torch
+from torch_utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, PositionalEncoding_torch
 from rotation_utils import euler_2_matrix_sincos, GeodesicLoss, get_orient_err, get_posit_err
 from pytorch3d import transforms
 
-EXP_NAME = 'pose_inn_kings' # 4 layers INN, 6 layers decoder
+EXP_NAME = 'pose_inn_kings'
 SCENE = 'KingsCollege/'
 DATA_DIR = 'data/'
 DATAFILE = '50k_train_w_render.npz'
