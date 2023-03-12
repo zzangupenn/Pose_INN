@@ -110,7 +110,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 2. We gather all training and testing data together. In the Pose_INN container, run:
     ```
-    python3 camera_sampling.py [scene]
+    python3 data_gathering.py [scene]
     ```
 
     This will generate a `50k_train_w_render.npz` file in your `[data_dir]/[scene]`.
