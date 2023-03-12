@@ -121,7 +121,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     python3 Pose_INN.py
     ```
-    In the printouts, you will see item `ori` and `dis` in the `TEST` lines. These are the median test orientation errors in degrees and displacement errors in meters.1
+    In the printouts, you will see item `ori` and `dis` in the `TEST` lines. These are the median test orientation errors in degrees and displacement errors in meters.
 
 
 

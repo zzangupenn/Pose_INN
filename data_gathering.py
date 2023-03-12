@@ -61,10 +61,6 @@ train_imgs = np.array(train_imgs)
 train_poses = np.array(train_poses)
 test_imgs = np.array(test_imgs)
 test_poses = np.array(test_poses)
-print(train_imgs.shape)
-print(train_poses.shape)
-print(test_imgs.shape)
-print(test_poses.shape)
 
 ## mean filter for failed rendering
 bad_img_inds = []
@@ -73,6 +69,11 @@ for ind in trange(train_H_matrixes.shape[0], train_imgs.shape[0]):
         bad_img_inds.append(ind)
 train_imgs = np.delete(train_imgs, bad_img_inds, axis=0)
 train_poses = np.delete(train_poses, bad_img_inds, axis=0)
+
+print(train_imgs.shape)
+print(train_poses.shape)
+print(test_imgs.shape)
+print(test_poses.shape)
 
 print('Save as 50k_train_w_render.npz')
 np.savez(data_dir + '/50k_train_w_render.npz', 

@@ -112,6 +112,9 @@ if scene == 'ShopFacade':
     train_H_matrixes = np.delete(train_H_matrixes, [215, 216], axis=0) # shop
 elif scene == 'StMarysChurch':
     train_H_matrixes = np.delete(train_H_matrixes, [121], axis=0) # church
+elif scene == 'KingsCollege':
+    # test poses only used for determining sample range
+    test_H_matrixes = np.delete(test_H_matrixes, [337], axis=0) # kings
 print(train_H_matrixes.shape)
 print(test_H_matrixes.shape)
 
