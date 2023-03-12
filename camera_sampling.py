@@ -1,7 +1,3 @@
-data_dir = '/media/DATA/pose_inn_demo' # TODO: Replace this with your [data_dir]
-scene = 'ShopFacade' # TODO: Replace this with your [scene]
-session = '2023-03-11_062711' # TODO: Replace this with your [session]
-
 import open3d as o3d
 import numpy as np
 import os, sys, cv2, copy
@@ -9,9 +5,18 @@ import utils, rotation_utils
 from tqdm import trange
 from scipy.spatial.transform import Rotation as R
 
+data_dir = 'data'
+scene = sys.argv[1]
+data_dir = data_dir + '/' + scene
+session = sys.argv[2] 
+
+
 if scene in ['ShopFacade', 'KingsCollege', 'OldHospital', 'StMarysChurch']:
     fov = 36.039642368
     resolution = [160, 90]
+elif scene in ['chess', 'fire', 'heads', 'office', 'pumpkin', 'redkitchen', 'stairs']:
+    fov = 62.7269
+    resolution = [160, 120]
 
 if scene == 'ShopFacade':
     R_to_align_axis = R.from_euler('z', 0, degrees=True).as_matrix()
@@ -159,26 +164,26 @@ print('Show the statistics of train poses. Omitted')
 
 
 print('First sample 1000 poses for visualization. Omitted.')
-sampled_num = 1000
-sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
-                        delta_training, N_in_view, delta_in_view, pcd)
+# sampled_num = 1000
+# sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
+#                         delta_training, N_in_view, delta_in_view, pcd)
 
-o3d_visualizer = utils.open3dUtils()
-o3d_visualizer.show_axis = True
-size = 0.5
-for ind in range(sampled_Hs.shape[0]):
-    o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(sampled_Hs[ind], size=size, color=[1.0, 0.5, 0]))
-o3d_visualizer.add_object(pcd.select_by_index(np.where(np.mean(np.asarray(pcd.colors), axis=1) < 0.9)[0]))
-# o3d_visualizer.add_object(pcd)
+# o3d_visualizer = utils.open3dUtils()
+# o3d_visualizer.show_axis = True
+# size = 0.5
+# for ind in range(sampled_Hs.shape[0]):
+#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(sampled_Hs[ind], size=size, color=[1.0, 0.5, 0]))
+# o3d_visualizer.add_object(pcd.select_by_index(np.where(np.mean(np.asarray(pcd.colors), axis=1) < 0.9)[0]))
+# # o3d_visualizer.add_object(pcd)
 
-for ind in np.random.choice(np.arange(train_H_matrixes.shape[0]), np.min([500, train_H_matrixes.shape[0]]), replace=False):
-    H_matrix = train_H_matrixes[ind].copy()
-    o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[1, 0, 0]))
+# for ind in np.random.choice(np.arange(train_H_matrixes.shape[0]), np.min([500, train_H_matrixes.shape[0]]), replace=False):
+#     H_matrix = train_H_matrixes[ind].copy()
+#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[1, 0, 0]))
     
-for ind in np.random.choice(np.arange(test_H_matrixes.shape[0]), np.min([500, test_H_matrixes.shape[0]]), replace=False):
-    H_matrix = test_H_matrixes[ind].copy()
-    o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[0, 0, 1]))
-o3d_visualizer.show()
+# for ind in np.random.choice(np.arange(test_H_matrixes.shape[0]), np.min([500, test_H_matrixes.shape[0]]), replace=False):
+#     H_matrix = test_H_matrixes[ind].copy()
+#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[0, 0, 1]))
+# o3d_visualizer.show()
 
 
 
