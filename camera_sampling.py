@@ -188,7 +188,7 @@ if not OMIT_STATS:
             continue
         points = np.asarray(pcd2.points)
         angles = angle_w_z(points)
-        fov = 36 / 180 * np.pi / 2
+        fov = fov_camera / 180 * np.pi / 2
         pcd2 = pcd2.select_by_index(np.where(angle_w_z(points) < fov)[0])
         pcd2_xyz = np.asarray(pcd2.points)
         if pcd2_xyz.shape[0] > 0:
@@ -267,7 +267,7 @@ for ind in range(sampled_Hs.shape[0]):
     H_matrix = transform @ H_matrix
     H_matrix[:3, 3] *= scale
     camera_path_json["camera_to_world"] = list(H_matrix.flatten())
-    camera_path_json["fov"] = fov
+    camera_path_json["fov"] = fov_camera
     camera_path.append(camera_path_json)
     
 camera_json.d["camera_path"] = camera_path

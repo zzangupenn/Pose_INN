@@ -116,3 +116,4 @@ test_H_matrixes = np.array(test_H_matrixes)
 print('test_H_matrixes', test_H_matrixes.shape)
 
 np.savez(data_dir + '/' + scene + '_H_matrixes.npz', train_H_matrixes=train_H_matrixes, test_H_matrixes=test_H_matrixes)
+print('Next step is NeRF training.')
