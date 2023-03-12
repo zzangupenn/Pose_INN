@@ -1,11 +1,12 @@
-data_dir = '/media/DATA/pose_inn_demo' # TODO: Replace this with your [data_dir]
-scene = 'ShopFacade' # TODO: Replace this with your [scene]
-
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 from tqdm import trange
-import cv2
+import os, sys, cv2
 import utils
+
+data_dir = 'data'
+scene = sys.argv[1]
+data_dir = data_dir + '/' + scene
 
 print('Load poses')
 data_dir = data_dir + '/' + scene
