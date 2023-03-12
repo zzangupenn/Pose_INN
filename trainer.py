@@ -49,11 +49,7 @@ class Trainer():
         
     
     def get_lr(self):
-        # print(self.epoch, self.lr)
-        # print(self.rl_schedule_epoch)
-        # print(self.rl_schedule)
 
-        # lr_method = 'exponential_stop'
         if self.lr_method == 'step':
             if self.epoch == self.rl_schedule_epoch[self.current_schedule]:
                 if self.lr > self.rl_schedule[self.current_schedule]:
@@ -65,7 +61,6 @@ class Trainer():
                 self.current_schedule += 1
             if self.lr > self.rl_schedule[self.current_schedule]:
                 self.lr += (self.rl_schedule[self.current_schedule] - self.lr) / (self.rl_schedule_epoch[self.current_schedule] - self.epoch)
-            # print(self.lr)
         elif self.lr_method == 'exponential':
             if self.epoch == 0:
                 return self.lr

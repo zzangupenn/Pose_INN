@@ -117,14 +117,11 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 ## Pose_INN training.
 
-1. Please use the Dockerfile build and run the container:
+1. Now we can train the Pose_INN. In the Pose_INN container, run:
     ```
-    cd Pose_INN
-    docker build -t pose_inn .
-    docker run -ti --gpus all --ipc=host --name pose_inn \
-    -v [data_dir]:/workspace/data \
-    -v ./results:/workspace/result pose_inn /bin/bash
+    python3 Pose_INN.py
     ```
+    In the printouts, you will see item `ori` and `dis` in the `TEST` lines. These are the median test orientation errors in degrees and displacement errors in meters.1
 
 
 
