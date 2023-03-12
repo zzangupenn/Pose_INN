@@ -14,11 +14,11 @@ session = sys.argv[2]
 
 
 if scene in ['ShopFacade', 'KingsCollege', 'OldHospital', 'StMarysChurch']:
-    fov = 36.039642368
+    fov_camera = 36.039642368
     resolution = [160, 90]
     visualize_size = 0.5
 elif scene in ['chess', 'fire', 'heads', 'office', 'pumpkin', 'redkitchen', 'stairs']:
-    fov = 62.7269
+    fov_camera = 62.7269
     resolution = [160, 120]
     visualize_size = 0.02
 
@@ -42,6 +42,41 @@ elif scene == 'StMarysChurch':
     delta_training = 5
     N_in_view = [2000, 13000]
     delta_in_view = [2.5, 15]
+elif scene == 'stairs':
+    R_to_align_axis = R.from_euler('y', -36, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [2000, 18000]
+    delta_in_view = [0.5, 1.5]
+elif scene == 'chess':
+    R_to_align_axis = R.from_euler('y', 0, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [1500, 18000]
+    delta_in_view = [0.5, 1.7]
+elif scene == 'fire':
+    R_to_align_axis = R.from_euler('y', 0, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [5000, 30000]
+    delta_in_view = [0.4, 1.4]
+elif scene == 'heads':
+    R_to_align_axis = R.from_euler('y', 0, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [2000, 15000]
+    delta_in_view = [0.4, 0.65]
+elif scene == 'office':
+    R_to_align_axis = R.from_euler('y', 0, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [1000, 14000]
+    delta_in_view = [0,6, 1.6]
+elif scene == 'pumpkin':
+    R_to_align_axis = R.from_euler('y', -27, degrees=True).as_matrix()
+    delta_training = 0.5
+    N_in_view = [5000, 20000]
+    delta_in_view = [0.5, 2.0]
+elif scene == 'redkitchen':
+    R_to_align_axis = R.from_euler('y', -25, degrees=True).as_matrix()
+    delta_training = 5
+    N_in_view = [2000, 20000]
+    delta_in_view = [0.2, 1.4]
 
 def angle_w_z(point):
     return np.arcsin(np.sqrt(point[:, 0] ** 2 + point[:, 1] ** 2) / np.linalg.norm(point, axis=1))
@@ -71,9 +106,9 @@ def camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixe
             print(cnt)
             printed_cnt = cnt
             
-        sampled_xyz = np.array([np.random.uniform(xyz_range[0, 0], xyz_range[1, 0], 1),
-                                np.random.uniform(xyz_range[0, 1], xyz_range[1, 1], 1),
-                                np.random.uniform(xyz_range[0, 2], xyz_range[1, 2], 1)])
+        sampled_xyz = np.array([np.random.uniform(xyz_range[0, 0]-0.1, xyz_range[1, 0]+0.1, 1),
+                                np.random.uniform(xyz_range[0, 1]-0.1, xyz_range[1, 1]+0.1, 1),
+                                np.random.uniform(xyz_range[0, 2]-0.1, xyz_range[1, 2]+0.1, 1)])
     
         distances_trainset = np.linalg.norm(aligned_train_pos - sampled_xyz.T, axis=1)
         if np.min(distances_trainset) > delta_training: 
@@ -92,7 +127,7 @@ def camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixe
         except:
             continue
         points = np.asarray(pcd2.points)
-        fov = fov / 180 * np.pi / 2 
+        fov = fov_camera / 180 * np.pi / 2 
         pcd2 = pcd2.select_by_index(np.where(angle_w_z(points) < fov)[0])
 
         pcd2_xyz = np.asarray(pcd2.points)
