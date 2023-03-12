@@ -16,11 +16,16 @@ from torch_utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, Posit
 from rotation_utils import euler_2_matrix_sincos, GeodesicLoss, get_orient_err, get_posit_err
 from pytorch3d import transforms
 
-if len(sys.argv) > 1:
-    EXP_NAME = sys.argv[1]
+if len(sys.argv) > 3:
+    SCENE = sys.argv[1] + '/'
+    EXP_NAME = sys.argv[2]
+    CUDA_NAME = sys.argv[3]
+elif len(sys.argv) > 2:
+    SCENE = sys.argv[1] + '/'
+    EXP_NAME = sys.argv[2]
+    CUDA_NAME = 'cuda'
 else:
-    EXP_NAME = 'pose_inn_kings'
-SCENE = 'KingsCollege/'
+    print('Please give scene and exp name.')
 DATA_DIR = 'data/'
 DATAFILE = '50k_train_w_render.npz'
 
@@ -175,7 +180,7 @@ def main():
     from torch.utils.tensorboard import SummaryWriter
     from utils import ConfigJSON, DataProcessor
     writer = SummaryWriter('results/tensorboard/' + EXP_NAME)
-    device = torch.device('cuda:1')
+    device = torch.device(CUDA_NAME)
     
     print("EXP_NAME", EXP_NAME)
     if not os.path.exists('results/' + EXP_NAME + '/'):
