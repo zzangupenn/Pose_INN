@@ -38,7 +38,7 @@ There are four stages in reproducing our work:
     sh ./kapture_cambridge.sh [data_dir]/[scene]
     ```
 
-3. We will prepare the data for NeRF: 
+3. We will prepare the training data for NeRF: 
     ```
     python3 data_processing_for_nerf.py [scene]
     ```
@@ -55,7 +55,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     
     ```
     docker pull dromni/nerfstudio:0.1.16
-    docker run --gpus all --network host \
+    docker run --gpus all --network host --name pose_inn_nerfstudio \
         -v [data_dir]/:/workspace/ \
         -v /home/<YOUR_USER>/.cache/:/home/user/.cache/ \
         -p 7007:7007 --shm-size=12gb --rm -it dromni/nerfstudio:0.1.16
@@ -93,7 +93,18 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 ## NeRF rendering
 
-1. In the nerfstudio container, run the following to render the images:
+1. We go back to the Pose_INN container: 
+    ```
+    docker run -ti --rm --gpus all --ipc=host --name pose_inn \
+    -v [data_dir]:/workspace/data \
+    -v ./results:/workspace/results pose_inn /bin/bash
+    ```
+    And sample camera poses:
+    ```
+    
+    ```
+
+In the nerfstudio container, run the following to render the images:
     ```
     ns-render --load-config outputs/nerfacto/[session]/config.yml \
     --traj filename \
