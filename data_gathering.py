@@ -30,7 +30,7 @@ print('Gather data')
 train_imgs = []
 train_poses = []
 for ind in trange(train_H_matrixes.shape[0]):
-    ## SfM poses in training set is wrong
+    ## Some SfM poses in dataset are wrong
     if scene == 'ShopFacade' and ind in [215, 216]:
         continue
     elif scene == 'StMarysChurch' and ind in [121]:

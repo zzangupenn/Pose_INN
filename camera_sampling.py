@@ -4,6 +4,8 @@ import os, sys, cv2, copy
 import utils, rotation_utils
 from tqdm import trange
 from scipy.spatial.transform import Rotation as R
+OMIT_STATS = True
+OMIT_SAMPLE_VISUALIZATION = True
 
 data_dir = 'data'
 scene = sys.argv[1]
@@ -14,9 +16,11 @@ session = sys.argv[2]
 if scene in ['ShopFacade', 'KingsCollege', 'OldHospital', 'StMarysChurch']:
     fov = 36.039642368
     resolution = [160, 90]
+    visualize_size = 0.5
 elif scene in ['chess', 'fire', 'heads', 'office', 'pumpkin', 'redkitchen', 'stairs']:
     fov = 62.7269
     resolution = [160, 120]
+    visualize_size = 0.02
 
 if scene == 'ShopFacade':
     R_to_align_axis = R.from_euler('z', 0, degrees=True).as_matrix()
@@ -34,7 +38,7 @@ elif scene == 'OldHospital':
     N_in_view = [3000, 23000]
     delta_in_view = [0.5, 23]
 elif scene == 'StMarysChurch':
-    R_to_align_axis = R.from_euler('z', -2, degrees=True).as_matrix()
+    R_to_align_axis = R.from_euler('zy', [-2, 1], degrees=True).as_matrix()
     delta_training = 5
     N_in_view = [2000, 13000]
     delta_in_view = [2.5, 15]
@@ -88,7 +92,7 @@ def camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixe
         except:
             continue
         points = np.asarray(pcd2.points)
-        fov = 36 / 180 * np.pi / 2 
+        fov = fov / 180 * np.pi / 2 
         pcd2 = pcd2.select_by_index(np.where(angle_w_z(points) < fov)[0])
 
         pcd2_xyz = np.asarray(pcd2.points)
@@ -107,13 +111,14 @@ print('Load poses')
 data_npz = np.load(data_dir + '/' + scene + '_H_matrixes.npz')
 train_H_matrixes = data_npz['train_H_matrixes']
 test_H_matrixes = data_npz['test_H_matrixes']
-## SfM poses in training set is wrong
+## Some SfM poses in dataset are wrong
+## test poses here is only used for determining sample range
 if scene == 'ShopFacade':
     train_H_matrixes = np.delete(train_H_matrixes, [215, 216], axis=0) # shop
 elif scene == 'StMarysChurch':
     train_H_matrixes = np.delete(train_H_matrixes, [121], axis=0) # church
+    test_H_matrixes = np.delete(test_H_matrixes, [19], axis=0) # kings
 elif scene == 'KingsCollege':
-    # test poses only used for determining sample range
     test_H_matrixes = np.delete(test_H_matrixes, [337], axis=0) # kings
 print(train_H_matrixes.shape)
 print(test_H_matrixes.shape)
@@ -133,59 +138,65 @@ print(pcd)
 
 
 
-print('Show the statistics of train poses. Omitted')
-# point_counts = []
-# distance_counts = []
-# for ind in trange(train_H_matrixes.shape[0]):
-#     pcd2 = copy.deepcopy(pcd)
-#     pcd2.transform(np.linalg.inv(train_H_matrixes[ind]))
-#     max_bound = pcd2.get_max_bound()
-#     max_bound[2] = 0
-#     try:
-#         pcd2 = pcd2.crop(o3d.geometry.AxisAlignedBoundingBox(pcd2.get_min_bound(), max_bound))
-#     except:
-#         continue
-#     points = np.asarray(pcd2.points)
-#     angles = angle_w_z(points)
-#     fov = 36 / 180 * np.pi / 2
-#     pcd2 = pcd2.select_by_index(np.where(angle_w_z(points) < fov)[0])
-#     pcd2_xyz = np.asarray(pcd2.points)
-#     if pcd2_xyz.shape[0] > 0:
-#         distances = np.linalg.norm(pcd2_xyz, axis=1)
-#         point_counts.append(pcd2_xyz.shape[0])
-#         distance_counts.append(np.min(distances))
-#     # print(pcd2_xyz.shape[0], np.min(distances))
-# import matplotlib.pyplot as plt
-# plt.hist(point_counts, bins='auto')
-# plt.show()
-# plt.hist(distance_counts, bins='auto')
-# plt.show()
-# print(np.median(point_counts))
-# print(np.median(distance_counts))
+print('Show the statistics of train poses.')
+if not OMIT_STATS:
+    point_counts = []
+    distance_counts = []
+    for ind in trange(train_H_matrixes.shape[0]):
+        pcd2 = copy.deepcopy(pcd)
+        pcd2.transform(np.linalg.inv(train_H_matrixes[ind]))
+        max_bound = pcd2.get_max_bound()
+        max_bound[2] = 0
+        try:
+            pcd2 = pcd2.crop(o3d.geometry.AxisAlignedBoundingBox(pcd2.get_min_bound(), max_bound))
+        except:
+            continue
+        points = np.asarray(pcd2.points)
+        angles = angle_w_z(points)
+        fov = 36 / 180 * np.pi / 2
+        pcd2 = pcd2.select_by_index(np.where(angle_w_z(points) < fov)[0])
+        pcd2_xyz = np.asarray(pcd2.points)
+        if pcd2_xyz.shape[0] > 0:
+            distances = np.linalg.norm(pcd2_xyz, axis=1)
+            point_counts.append(pcd2_xyz.shape[0])
+            distance_counts.append(np.min(distances))
+        # print(pcd2_xyz.shape[0], np.min(distances))
+    import matplotlib.pyplot as plt
+    plt.hist(point_counts, bins='auto')
+    plt.show()
+    plt.hist(distance_counts, bins='auto')
+    plt.show()
+    print(np.median(point_counts))
+    print(np.median(distance_counts))
+else:
+    print('Omitted')
 
 
 
-print('First sample 1000 poses for visualization. Omitted.')
-# sampled_num = 1000
-# sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
-#                         delta_training, N_in_view, delta_in_view, pcd)
+print('First sample 1000 poses for visualization.')
+if not OMIT_SAMPLE_VISUALIZATION:
+    sampled_num = 1000
+    sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
+                            delta_training, N_in_view, delta_in_view, pcd)
 
-# o3d_visualizer = utils.open3dUtils()
-# o3d_visualizer.show_axis = True
-# size = 0.5
-# for ind in range(sampled_Hs.shape[0]):
-#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(sampled_Hs[ind], size=size, color=[1.0, 0.5, 0]))
-# o3d_visualizer.add_object(pcd.select_by_index(np.where(np.mean(np.asarray(pcd.colors), axis=1) < 0.9)[0]))
-# # o3d_visualizer.add_object(pcd)
+    o3d_visualizer = utils.open3dUtils()
+    o3d_visualizer.show_axis = True
+    size = visualize_size
+    for ind in range(sampled_Hs.shape[0]):
+        o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(sampled_Hs[ind], size=size, color=[1.0, 0.5, 0]))
+    o3d_visualizer.add_object(pcd.select_by_index(np.where(np.mean(np.asarray(pcd.colors), axis=1) < 0.9)[0]))
+    # o3d_visualizer.add_object(pcd)
 
-# for ind in np.random.choice(np.arange(train_H_matrixes.shape[0]), np.min([500, train_H_matrixes.shape[0]]), replace=False):
-#     H_matrix = train_H_matrixes[ind].copy()
-#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[1, 0, 0]))
-    
-# for ind in np.random.choice(np.arange(test_H_matrixes.shape[0]), np.min([500, test_H_matrixes.shape[0]]), replace=False):
-#     H_matrix = test_H_matrixes[ind].copy()
-#     o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[0, 0, 1]))
-# o3d_visualizer.show()
+    for ind in np.random.choice(np.arange(train_H_matrixes.shape[0]), np.min([500, train_H_matrixes.shape[0]]), replace=False):
+        H_matrix = train_H_matrixes[ind].copy()
+        o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[1, 0, 0]))
+        
+    for ind in np.random.choice(np.arange(test_H_matrixes.shape[0]), np.min([500, test_H_matrixes.shape[0]]), replace=False):
+        H_matrix = test_H_matrixes[ind].copy()
+        o3d_visualizer.add_object(o3d_visualizer.create_camera_poses(H_matrix, size=size, color=[0, 0, 1]))
+    o3d_visualizer.show()
+else:
+    print('Omitted')
 
 
 

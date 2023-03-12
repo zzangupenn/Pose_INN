@@ -1,3 +1,5 @@
+docker build -t pose_inn .
+
 docker run --gpus '"device=1"' --network host --name pose_inn_nerfstudio \
         -v ~/data/pose_inn/KingsCollege/:/workspace/ \
         -v ~/.cache/:/home/user/.cache/ \
