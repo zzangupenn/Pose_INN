@@ -101,7 +101,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     And sample camera poses:
     ```
-    
+    python3 camera_sampling.py 
     ```
 
 In the nerfstudio container, run the following to render the images:
