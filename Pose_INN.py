@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from torch.cuda.amp import GradScaler, autocast
-import os
+import os, sys
 
 # FrEIA imports
 import FrEIA.framework as Ff
@@ -16,7 +16,10 @@ from torch_utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, Posit
 from rotation_utils import euler_2_matrix_sincos, GeodesicLoss, get_orient_err, get_posit_err
 from pytorch3d import transforms
 
-EXP_NAME = 'pose_inn_kings'
+if len(sys.argv) > 1:
+    EXP_NAME = sys.argv[1]
+else:
+    EXP_NAME = 'pose_inn_kings'
 SCENE = 'KingsCollege/'
 DATA_DIR = 'data/'
 DATAFILE = '50k_train_w_render.npz'
@@ -135,14 +138,17 @@ class Local_INN(nn.Module):
 
 class torchDataset(torch.utils.data.Dataset):
     def __init__(self, data, device):
-        self.pose_array = torch.from_numpy(data['pose_array']).type('torch.FloatTensor').to(device)
+        self.pose_array = torch.from_numpy(data['pose_array']).type('torch.FloatTensor')
+        if MOVE_DATA_TO_DEVICE: self.pose_array = self.pose_array.to(device)
         print('pose_array.shape', self.pose_array.shape)
-        self.matrix_array = euler_2_matrix_sincos(self.pose_array[:, 6:12], 'ZXY').to(device)
+        self.matrix_array = euler_2_matrix_sincos(self.pose_array[:, 6:12], 'ZXY')
+        if MOVE_DATA_TO_DEVICE: self.matrix_array = self.matrix_array.to(device)
         print('matrix_array', self.matrix_array.shape)
         
         self.img_array = np.transpose(data['img_array'], (0, 3, 1, 2))
         self.img_array = torch.from_numpy(self.img_array).type('torch.FloatTensor')
-        self.img_array = torchvision.transforms.Resize((128, 128)).forward(self.img_array).to(device)
+        self.img_array = torchvision.transforms.Resize((128, 128)).forward(self.img_array)
+        if MOVE_DATA_TO_DEVICE: self.img_array = self.img_array.to(device)
         self.img_array = self.img_array / 255
         print('img_array.shape', self.img_array.shape)
         
@@ -351,7 +357,8 @@ def main():
                 vae_recon_loss = l1_loss(img, y_vae)
                 inn_recon_loss = l1_loss(img, y_inn)
                 y_hat_inn_loss = l1_loss(y_hat_inn[:, :-6], y_hat_vae[:, :-6])
-                loss_forward = vae_recon_loss + inn_recon_loss + vae_kl_loss + y_hat_inn_loss
+                # loss_forward = vae_recon_loss + inn_recon_loss + vae_kl_loss + y_hat_inn_loss
+                loss_forward = vae_recon_loss + vae_kl_loss + y_hat_inn_loss
                 epoch_info[0] += loss_forward.item()
             
             scaler.scale(loss_forward).backward(retain_graph=True)
@@ -394,9 +401,9 @@ def main():
                 
             scaler.scale(loss_reverse).backward()
             scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 8)
-            torch.nn.utils.clip_grad_norm_(model.vae.encoder.parameters(), 8)
-            torch.nn.utils.clip_grad_norm_(model.vae.decoder.parameters(), 8)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
+            # torch.nn.utils.clip_grad_norm_(model.vae.encoder.parameters(), 8)
+            # torch.nn.utils.clip_grad_norm_(model.vae.decoder.parameters(), 8)
 
             scaler.step(optimizer)
             scaler.update()

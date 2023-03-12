@@ -119,8 +119,9 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 1. Now we can train the Pose_INN. In the Pose_INN container, run:
     ```
-    python3 Pose_INN.py
+    python3 Pose_INN.py [EXP_NAME]
     ```
+    Argument [EXP_NAME] can be anything.
     In the printouts, you will see item `ori` and `dis` in the `TEST` lines. These are the median test orientation errors in degrees and displacement errors in meters.
 
 

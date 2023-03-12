@@ -1,12 +1,12 @@
 docker build -t pose_inn .
 
-docker run --gpus '"device=1"' --network host --name pose_inn_nerfstudio \
-        -v ~/data/pose_inn/KingsCollege/:/workspace/ \
+docker run --gpus '"device=0"' --network host --name pose_inn_nerfstudio_0 \
+        -v ~/data/pose_inn/fire/:/workspace/ \
         -v ~/.cache/:/home/user/.cache/ \
         -p 7007:7007 --shm-size=12gb --rm -it nerfstudio
 
 
-docker run -ti --rm --gpus all --ipc=host --name pose_inn \
+docker run -ti --rm --gpus all --ipc=host --name pose_inn_0 \
     -v ~/data/pose_inn:/workspace/data \
     -v ./results:/workspace/results pose_inn /bin/bash
 
