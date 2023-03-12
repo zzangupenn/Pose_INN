@@ -392,7 +392,7 @@ def main():
                 loss_reverse += x_hat_i_loss + torch.min(torch.stack(x_hat_i_rot_losses))
                 epoch_info[1] += loss_reverse
                 
-            scaler.scale(loss_reverse * 1.1).backward()
+            scaler.scale(loss_reverse).backward()
             scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), 8)
             torch.nn.utils.clip_grad_norm_(model.vae.encoder.parameters(), 8)
