@@ -8,8 +8,6 @@ from scipy.spatial.transform import Rotation as R
 data_dir = 'data'
 scene = sys.argv[1]
 data_dir = data_dir + '/' + scene
-session = sys.argv[2] 
-
 
 if scene in ['ShopFacade', 'KingsCollege', 'OldHospital', 'StMarysChurch']:
     fov = 36.039642368
