@@ -93,26 +93,20 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
 
 ## NeRF rendering
 
-1. We go back to the Pose_INN container: 
+1. We go back to the Pose_INN container and sample camera poses:
     ```
-    docker run -ti --rm --gpus all --ipc=host --name pose_inn \
-    -v [data_dir]:/workspace/data \
-    -v ./results:/workspace/results pose_inn /bin/bash
-    ```
-    And sample camera poses:
-    ```
-    python3 camera_sampling.py 
+    python3 camera_sampling.py [scene] [session]
     ```
 
-In the nerfstudio container, run the following to render the images:
+2. In the nerfstudio container, run the following to render the images:
     ```
     ns-render --load-config outputs/nerfacto/[session]/config.yml \
     --traj filename \
     --camera-path-filename ./camera_path.json \
-    --output-path ./render_pc/ \
+    --output-path ./render/ \
     --output-format images
     ```
-    This puts the rendered image in `[data_dir]/[scene]/render_pc/`.
+    This puts the rendered image in `[data_dir]/[scene]/render/`.
 
 2. Modify the first two lines in `data_gathering.py` and run it.
     This will generate a `50k_train_w_render.npz` file in your `[data_dir]/[scene]`.

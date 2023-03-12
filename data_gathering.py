@@ -9,7 +9,7 @@ import utils
 
 print('Load poses')
 data_dir = data_dir + '/' + scene
-data_dir_render = data_dir + '/render_pc'
+data_dir_render = data_dir + '/render'
 data_npz = np.load(data_dir + '/' + scene + '_H_matrixes.npz')
 train_H_matrixes = data_npz['train_H_matrixes']
 test_H_matrixes = data_npz['test_H_matrixes']
