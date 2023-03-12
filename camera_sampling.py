@@ -187,7 +187,7 @@ print('First sample 1000 poses for visualization. Omitted.')
 
 
 print('Sample 50000 poses for visualization. This will take 10 minutes')
-sampled_num = 500
+sampled_num = 50000
 sampled_Hs = camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixes,
                         delta_training, N_in_view, delta_in_view, pcd)
 

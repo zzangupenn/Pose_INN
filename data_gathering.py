@@ -8,6 +8,13 @@ data_dir = 'data'
 scene = sys.argv[1]
 data_dir = data_dir + '/' + scene
 
+if scene in ['ShopFacade', 'KingsCollege', 'OldHospital', 'StMarysChurch']:
+    fov = 36.039642368
+    resolution = [160, 90]
+elif scene in ['chess', 'fire', 'heads', 'office', 'pumpkin', 'redkitchen', 'stairs']:
+    fov = 62.7269
+    resolution = [160, 120]
+
 print('Load poses')
 data_dir_render = data_dir + '/render'
 data_npz = np.load(data_dir + '/' + scene + '_H_matrixes.npz')
@@ -15,6 +22,7 @@ train_H_matrixes = data_npz['train_H_matrixes']
 test_H_matrixes = data_npz['test_H_matrixes']
 print(train_H_matrixes.shape)
 print(test_H_matrixes.shape)
+
 
 
 
@@ -27,14 +35,14 @@ for ind in trange(train_H_matrixes.shape[0]):
         continue
     elif scene == 'StMarysChurch' and ind in [121]:
         continue
-    img = cv2.resize(cv2.imread(data_dir + "/images/{:05d}.png".format(ind)), (160, 90))
+    img = cv2.resize(cv2.imread(data_dir + "/images/{:05d}.png".format(ind)), (resolution[0], resolution[1]))
     train_imgs.append(np.asarray(img))
     train_poses.append(np.concatenate([train_H_matrixes[ind, :3, 3], R.from_matrix(train_H_matrixes[ind, :3, :3]).as_euler('zxy', degrees=False)]))
 
 test_imgs = []
 test_poses = []
 for ind in trange(test_H_matrixes.shape[0]):
-    img = cv2.resize(cv2.imread(data_dir + "/images/{:05d}.png".format(ind + train_H_matrixes.shape[0])), (160, 90))
+    img = cv2.resize(cv2.imread(data_dir + "/images/{:05d}.png".format(ind + train_H_matrixes.shape[0])), (resolution[0], resolution[1]))
     test_imgs.append(np.asarray(img))
     test_poses.append(np.concatenate([test_H_matrixes[ind, :3, 3], R.from_matrix(test_H_matrixes[ind, :3, :3]).as_euler('zxy', degrees=False)]))
 
