@@ -21,6 +21,10 @@ COPY ./*.py /workspace/
 COPY ./*.sh /workspace/
 
 RUN useradd -m -d /home/user -u 1004 user
+
+USER root
+RUN chown -R user:user /workspace
+
 USER 1004:1004
 
 ENV PATH="${PATH}:/home/user/.local/bin"

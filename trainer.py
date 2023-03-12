@@ -34,7 +34,7 @@ class Trainer():
         self.best_epoch_info = np.ones(7) * float('inf')
         self.prev_epoch_info = np.ones(7) * float('inf')
         self.current_schedule = 0
-        self.path = 'result/' + exp_name + '/'
+        self.path = 'results/' + exp_name + '/'
         if not os.path.exists(self.path):
             os.mkdir(self.path)
             
