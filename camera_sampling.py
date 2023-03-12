@@ -104,7 +104,6 @@ def camera_sample(sampled_num, R_to_align_axis, train_H_matrixes, test_H_matrixe
 
 
 print('Load poses')
-data_dir = data_dir + '/' + scene
 data_npz = np.load(data_dir + '/' + scene + '_H_matrixes.npz')
 train_H_matrixes = data_npz['train_H_matrixes']
 test_H_matrixes = data_npz['test_H_matrixes']
