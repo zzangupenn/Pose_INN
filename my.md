@@ -1,9 +1,9 @@
 docker build -t pose_inn .
 
 
-docker run -ti --rm --gpus all --ipc=host --name pose_inn_2 \
+docker run -ti --rm --gpus all --ipc=host --name pose_inn_0 \
     -v ~/data/pose_inn:/workspace/data \
-    -v ./results:/workspace/results pose_inn /bin/
+    -v ~/results2/pose_inn/pose_inn_0:/workspace/results pose_inn /bin/bash
     
 
 sh ./kapture_cambridge.sh data/[scene]
@@ -38,7 +38,7 @@ ns-render --load-config outputs/nerfacto/2023-03-12_063624/config.yml \
 
 python3 data_gathering.py KingsCollege
 
-python3 Pose_INN.py pose_inn_fire
+python3 Pose_INN.py KingsCollege pose_inn_kings cuda:0
 
 
 fire 2023-03-12_063624

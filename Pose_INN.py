@@ -16,6 +16,7 @@ from torch_utils import Conv2DLayer, TransConv2DLayer, PositionalEncoding, Posit
 from rotation_utils import euler_2_matrix_sincos, GeodesicLoss, get_orient_err, get_posit_err
 from pytorch3d import transforms
 
+print(sys.argv)
 if len(sys.argv) > 3:
     SCENE = sys.argv[1] + '/'
     EXP_NAME = sys.argv[2]
