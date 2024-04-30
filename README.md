@@ -56,7 +56,7 @@ It will create a directory `[data_dir]/[scene]/images`, a json file `[data_dir]/
     ```
     docker pull dromni/nerfstudio:0.1.16
     docker run --gpus all --network host --name pose_inn_nerfstudio \
-        -v [data_dir]/:/workspace/ \
+        -v [data_dir]/[scene]/:/workspace/ \
         -v /home/<YOUR_USER>/.cache/:/home/user/.cache/ \
         -p 7007:7007 --shm-size=12gb --rm -it dromni/nerfstudio:0.1.16
     ```
